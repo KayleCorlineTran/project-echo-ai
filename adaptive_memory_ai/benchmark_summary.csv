@@ -1,0 +1,4 @@
+﻿method,tests,recall_accuracy,stored_memories,retrieved_memories,irrelevant_rate
+No Memory,5,0.0,0,0,0
+Sliding Window,5,0.0,0,20,100.0
+Selective Long-Term Memory,5,100.0,5,5,0.0

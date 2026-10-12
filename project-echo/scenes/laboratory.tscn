@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://bmm13gvqtpfaj"]
+
+[ext_resource type="Script" uid="uid://ct8i6gp3wkvp" path="res://scripts/laboratory.gd" id="1_6mkvh"]
+[ext_resource type="Texture2D" uid="uid://cj1jlr6dt7xgp" path="res://assets/characters/the_kid_spritesheet.png" id="1_fknr6"]
+[ext_resource type="Script" uid="uid://btchc2es3rh33" path="res://scripts/player.gd" id="1_stu8i"]
+[ext_resource type="Texture2D" uid="uid://c110ko1ervdnd" path="res://assets/ui/TextBox_Sci-Fi_02_transparent.png" id="4_ehj20"]
+[ext_resource type="Script" uid="uid://c785x0qsmlxvj" path="res://scripts/interactable.gd" id="5_0qmye"]
+[ext_resource type="Texture2D" uid="uid://cwp1fb18ysfdc" path="res://assets/ui/Futuristic Project Echo Laboratory.png" id="6_0qmye"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_stu8i"]
+atlas = ExtResource("1_fknr6")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6mkvh"]
+atlas = ExtResource("1_fknr6")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_725wk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_stu8i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6mkvh")
+}],
+"loop": 1,
+"name": &"walk_down",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8p77j"]
+size = Vector2(28, 10.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bggyg"]
+size = Vector2(175, 193)
+
+[node name="Laboratory" type="Node2D" unique_id=2086538020]
+script = ExtResource("1_6mkvh")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1540157829]
+script = ExtResource("1_stu8i")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=1609684710]
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_725wk")
+animation = &"walk_down"
+frame_progress = 0.9414428
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=117846813]
+position = Vector2(0, 26.75)
+shape = SubResource("RectangleShape2D_8p77j")
+
+[node name="AIRequest" type="HTTPRequest" parent="." unique_id=2047357074]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=405732754]
+
+[node name="DialogueFrame" type="TextureRect" parent="UI" unique_id=1458226040]
+z_index = 10
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 910.0
+offset_bottom = 180.0
+texture = ExtResource("4_ehj20")
+expand_mode = 1
+
+[node name="DialogueLabel" type="Label" parent="UI/DialogueFrame" unique_id=1073092698]
+z_index = 10
+layout_mode = 0
+offset_left = 280.0
+offset_top = 35.0
+offset_right = 840.0
+offset_bottom = 130.0
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="ComputerArea" type="Area2D" parent="." unique_id=1208733034]
+script = ExtResource("5_0qmye")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ComputerArea" unique_id=1134201278]
+position = Vector2(480.5, 317.5)
+shape = SubResource("RectangleShape2D_bggyg")
+
+[node name="ComputerArea2" type="Area2D" parent="." unique_id=1651133849]
+script = ExtResource("5_0qmye")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ComputerArea2" unique_id=1720952231]
+position = Vector2(480.5, 317.5)
+shape = SubResource("RectangleShape2D_bggyg")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1833800033]
+z_index = -10
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = ExtResource("6_0qmye")
+expand_mode = 1
+
+[connection signal="body_entered" from="ComputerArea" to="ComputerArea" method="_on_body_entered"]
+[connection signal="body_exited" from="ComputerArea" to="ComputerArea" method="_on_body_exited"]
+[connection signal="body_entered" from="ComputerArea2" to="ComputerArea2" method="_on_body_entered"]
+[connection signal="body_exited" from="ComputerArea2" to="ComputerArea2" method="_on_body_exited"]

@@ -1,0 +1,16 @@
+﻿method,case,recall,stored_memories,retrieved_memories,irrelevant_retrievals,avg_distance
+No Memory,safe_code,0,0,0,0,0
+Sliding Window,safe_code,0,0,4,4,0
+Selective Long-Term Memory,safe_code,1,1,1,0,0.8834
+No Memory,door_code,0,0,0,0,0
+Sliding Window,door_code,0,0,4,4,0
+Selective Long-Term Memory,door_code,1,1,1,0,1.1291
+No Memory,locker_code,0,0,0,0,0
+Sliding Window,locker_code,0,0,4,4,0
+Selective Long-Term Memory,locker_code,1,1,1,0,1.1534
+No Memory,reactor_code,0,0,0,0,0
+Sliding Window,reactor_code,0,0,4,4,0
+Selective Long-Term Memory,reactor_code,1,1,1,0,1.0339
+No Memory,exit_code,0,0,0,0,0
+Sliding Window,exit_code,0,0,4,4,0
+Selective Long-Term Memory,exit_code,1,1,1,0,1.156
