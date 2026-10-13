@@ -1,7 +1,7 @@
 extends Node2D
 
 
-@onready var computer_area = $ComputerArea
+@onready var player = $Player
 @onready var ai_request = $AIRequest
 @onready var dialogue_frame = $UI/DialogueFrame
 @onready var dialogue_label = $UI/DialogueFrame/DialogueLabel
@@ -45,17 +45,60 @@ func _process(_delta):
 		if ai_busy:
 			return
 
-		if computer_area.player_inside:
+		var target = get_active_interactable()
+
+		if target != null:
 			send_interaction(
 				"inspect",
-				computer_area.object_name,
-				computer_area.interaction_message
+				target.object_name,
+				target.interaction_message
 			)
 
 		else:
 			dialogue_label.text = (
 				"Bạn cần đứng gần vật thể để tương tác."
 			)
+			print_interaction_debug()
+
+
+# Trả về vật thể gần người chơi nhất trong số các vùng đang đứng trong.
+# Nếu hai vùng chồng lên nhau thì chọn vật gần hơn.
+func get_active_interactable():
+	var best = null
+	var best_distance := INF
+
+	for area in get_tree().get_nodes_in_group("interactables"):
+		# Hỏi trực tiếp physics thay vì tin vào cờ player_inside
+		if not area.overlaps_body(player):
+			continue
+
+		var distance = player.global_position.distance_to(
+			area.get_center()
+		)
+
+		if distance < best_distance:
+			best_distance = distance
+			best = area
+
+	return best
+
+
+# In ra tab Output để biết vì sao không tìm thấy vật thể nào
+func print_interaction_debug():
+	var areas = get_tree().get_nodes_in_group("interactables")
+
+	print("--- INTERACT DEBUG ---")
+	print("Player position: ", player.global_position)
+	print("Interactables registered: ", areas.size())
+
+	for area in areas:
+		print(
+			area.name,
+			" | object=", area.object_name,
+			" | overlaps_player=", area.overlaps_body(player),
+			" | monitoring=", area.monitoring,
+			" | center=", area.get_center()
+		)
 
 
 # =========================

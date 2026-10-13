@@ -4,6 +4,9 @@ extends CharacterBody2D
 
 @onready var sprite = $AnimatedSprite2D
 
+func _ready():
+	global_position = Vector2(533.0, 339.0)
+
 func _physics_process(_delta):
 	var direction = Input.get_vector(
 		"ui_left",
