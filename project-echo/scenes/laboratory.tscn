@@ -36,7 +36,7 @@ size = Vector2(28, 10.5)
 size = Vector2(96, 119)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_haj84"]
-size = Vector2(172, 214)
+size = Vector2(172, 236.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bggyg"]
 size = Vector2(188, 175)
@@ -97,15 +97,16 @@ shape = SubResource("RectangleShape2D_3j5hw")
 debug_color = Color(1.92523e-07, 0.641438, 0.33927009, 0.41960785)
 
 [node name="DoorArea" type="Area2D" parent="." unique_id=1989888205]
-position = Vector2(972, 260)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorArea" unique_id=104464762]
-position = Vector2(14, -7)
-shape = SubResource("RectangleShape2D_haj84")
-debug_color = Color(0.40034044, 0.468791, 1, 0.41960785)
+position = Vector2(986, 273)
 script = ExtResource("5_0qmye")
 object_name = "door"
 interaction_message = "Tôi kiểm tra cửa."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorArea" unique_id=104464762]
+visible = false
+position = Vector2(16, -43.75)
+shape = SubResource("RectangleShape2D_haj84")
+debug_color = Color(0.40034044, 0.468791, 1, 0.41960785)
 
 [node name="ComputerArea" type="Area2D" parent="." unique_id=1208733034]
 script = ExtResource("5_0qmye")
