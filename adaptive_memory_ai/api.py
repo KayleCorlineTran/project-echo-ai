@@ -396,7 +396,7 @@ VN_DIGITS = {
 _CODE_WORD = r"(?:mã(?!\s*(?:hóa|lệnh|nguồn|độc|vạch))\s*(?:két|số|mở|truy cập)?|code|mật khẩu|password)"
 
 CODE_QUESTION = re.compile(
-    rf"(?<!\w){_CODE_WORD}(?:\s+(?:két|sắt|số|mở|truy|cập|của|cái|này|ở|cửa|thoát|hiểm)){{0,3}}\s+(?:là gì|là bao nhiêu|bao nhiêu|là số mấy|đâu|nào)"
+    rf"(?<!\w){_CODE_WORD}(?:\s+(?:két|sắt|số|mở|truy|cập|của|cái|này|đó|kia|ấy|ở|cửa|thoát|hiểm|tôi|mình|đã|nhận|tìm|thấy|vừa|lúc|nãy|trước|hồi)){{0,4}}\s+(?:là gì|là bao nhiêu|bao nhiêu|là số mấy|đâu|nào)"
     rf"|(?:nhắc lại|nói lại|đọc lại|cho (?:tôi|mình) biết|quên)\s+(?:\w+\s+){{0,2}}{_CODE_WORD}"
     rf"|{_CODE_WORD}\s+(?:là gì|bao nhiêu)"
 )
@@ -451,6 +451,12 @@ def build_facts():
         lines.append("- Két sắt: ĐÃ MỞ.")
     else:
         lines.append("- Két sắt: ĐANG KHÓA.")
+
+    if flags["safe_code_known"]:
+        lines.append(
+            "- Người chơi ĐÃ biết mã két. "
+            "KHÔNG nhắc, gợi ý hay đọc lại mã, kể cả khi họ nhắc tới két."
+        )
 
     if "access_card" in GAME_STATE["inventory"]:
         lines.append("- Người chơi ĐÃ có thẻ truy cập.")
@@ -705,6 +711,30 @@ def mentions_code(text):
     return "phục hồi" in low
 
 
+CODE_REFERENCE = re.compile(
+    r"(?<!\w)(?:mã(?!\s*(?:hóa|lệnh|nguồn|độc|vạch))|code|mật khẩu|password"
+    r"|dãy số|chuỗi số|con số)(?!\w)"
+)
+
+
+def refers_to_code(text):
+
+    """
+    True nếu câu nhắc, đọc hoặc gợi ý về mã két dưới bất kỳ dạng nào
+    (con số, số viết chữ, hoặc chỉ nói "mã", "dãy số"...).
+    Chỉ dùng khi người chơi ĐÃ biết mã và KHÔNG hỏi lại.
+    """
+
+    if mentions_code(text):
+        return True
+
+    # Số viết chữ, kể cả ngăn cách bằng dấu phẩy: "bốn, một, ba, hai"
+    if extract_code(text) is not None:
+        return True
+
+    return bool(CODE_REFERENCE.search(text.lower()))
+
+
 def sanitize_dialogue(dialogue, object_name, must_include=None):
 
     """
@@ -716,16 +746,30 @@ def sanitize_dialogue(dialogue, object_name, must_include=None):
     compact = re.sub(r"[\s\-\.]", "", dialogue)
 
     # 1. Ngoài lần phục hồi mã đầu tiên, LLM KHÔNG được nhắc mã.
-    #    Bỏ từng câu có nhắc mã; hết câu thì dùng câu trung tính.
+    #    Việc đọc lại mã chỉ do resolve_player_logic đảm nhiệm,
+    #    và chỉ khi người chơi hỏi.
+    #    - Người chơi đã biết mã: bỏ mọi câu nhắc/gợi ý về mã,
+    #      để ECHO không lặp lại mã trong từng lần tương tác.
+    #    - Chưa biết mã: chỉ bỏ câu đọc số mã (chống bịa/lộ mã).
+    #    Hết câu thì dùng câu trung tính.
     if must_include is None:
+
+        is_code_sentence = (
+            refers_to_code
+            if flags["safe_code_known"]
+            else mentions_code
+        )
 
         sentences = [
             sentence
             for sentence in re.split(r"(?<=[.!?])\s+|\n+", dialogue)
-            if sentence.strip() and not mentions_code(sentence)
+            if sentence.strip() and not is_code_sentence(sentence)
         ]
 
         if not sentences:
+
+            if object_name == "safe":
+                return "Két sắt điện tử vẫn lặng lẽ chờ bạn."
 
             return random.choice([
                 "Tôi vẫn đang theo dõi từng bước của bạn.",
@@ -742,7 +786,11 @@ def sanitize_dialogue(dialogue, object_name, must_include=None):
         locked_target = "Cửa thoát hiểm vẫn khóa chặt."
 
     if object_name == "safe" and not flags["safe_opened"]:
-        locked_target = "Két sắt vẫn khóa. Nó cần một mã gồm bốn chữ số."
+        locked_target = (
+            "Két sắt vẫn khóa chặt."
+            if flags["safe_code_known"]
+            else "Két sắt vẫn khóa. Nó cần một mã gồm bốn chữ số."
+        )
 
     if locked_target:
 
@@ -1075,8 +1123,11 @@ QUY TẮC BẮT BUỘC:
 14. Trạng thái két, cửa, mã CHỈ lấy từ GAME STATE.
     Nếu GAME STATE ghi "ĐANG KHÓA" thì vật đó đang khóa,
     tuyệt đối không được nói nó đã mở.
-    Nếu GAME STATE ghi người chơi "CHƯA biết mã" thì
+    Nếu người chơi CHƯA biết mã thì
     không được nhắc bất kỳ con số nào như là mã.
+    Nếu GAME STATE ghi người chơi "ĐÃ biết mã" thì
+    tuyệt đối không nhắc lại hay gợi ý về mã trong câu trả lời,
+    việc đọc lại mã do hệ thống xử lý khi người chơi hỏi.
 
 Phải nhập vai ECHO và nói trực tiếp với người chơi.
 """

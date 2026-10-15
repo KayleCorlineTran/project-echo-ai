@@ -97,14 +97,13 @@ shape = SubResource("RectangleShape2D_3j5hw")
 debug_color = Color(1.92523e-07, 0.641438, 0.33927009, 0.41960785)
 
 [node name="DoorArea" type="Area2D" parent="." unique_id=1989888205]
-position = Vector2(986, 273)
+position = Vector2(992, 253)
 script = ExtResource("5_0qmye")
 object_name = "door"
 interaction_message = "Tôi kiểm tra cửa."
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DoorArea" unique_id=104464762]
-visible = false
-position = Vector2(16, -43.75)
+position = Vector2(-2, -1)
 shape = SubResource("RectangleShape2D_haj84")
 debug_color = Color(0.40034044, 0.468791, 1, 0.41960785)
 
