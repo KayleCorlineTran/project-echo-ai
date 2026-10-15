@@ -32,8 +32,18 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8p77j"]
 size = Vector2(28, 10.5)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3j5hw"]
+size = Vector2(96, 119)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_haj84"]
+size = Vector2(172, 236.5)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bggyg"]
-size = Vector2(175, 193)
+size = Vector2(188, 175)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_enmba"]
+normal = Vector2(0, 1)
+distance = 2.0
 
 [node name="Laboratory" type="Node2D" unique_id=2086538020]
 script = ExtResource("1_6mkvh")
@@ -42,6 +52,7 @@ script = ExtResource("1_6mkvh")
 script = ExtResource("1_stu8i")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=1609684710]
+position = Vector2(13, 0)
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_725wk")
 animation = &"walk_down"
@@ -74,28 +85,72 @@ offset_bottom = 130.0
 vertical_alignment = 1
 autowrap_mode = 3
 
+[node name="SafeArea" type="Area2D" parent="." unique_id=1598878390]
+position = Vector2(759, 314)
+script = ExtResource("5_0qmye")
+object_name = "safe"
+interaction_message = "Tôi kiểm tra chiếc két sắt."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeArea" unique_id=912162890]
+position = Vector2(0.5, -0.5)
+shape = SubResource("RectangleShape2D_3j5hw")
+debug_color = Color(1.92523e-07, 0.641438, 0.33927009, 0.41960785)
+
+[node name="DoorArea" type="Area2D" parent="." unique_id=1989888205]
+position = Vector2(986, 273)
+script = ExtResource("5_0qmye")
+object_name = "door"
+interaction_message = "Tôi kiểm tra cửa."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorArea" unique_id=104464762]
+visible = false
+position = Vector2(16, -43.75)
+shape = SubResource("RectangleShape2D_haj84")
+debug_color = Color(0.40034044, 0.468791, 1, 0.41960785)
+
 [node name="ComputerArea" type="Area2D" parent="." unique_id=1208733034]
 script = ExtResource("5_0qmye")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ComputerArea" unique_id=1134201278]
-position = Vector2(480.5, 317.5)
-shape = SubResource("RectangleShape2D_bggyg")
-
-[node name="ComputerArea2" type="Area2D" parent="." unique_id=1651133849]
-script = ExtResource("5_0qmye")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ComputerArea2" unique_id=1720952231]
-position = Vector2(480.5, 317.5)
+position = Vector2(487, 302.5)
 shape = SubResource("RectangleShape2D_bggyg")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1833800033]
 z_index = -10
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_left = 1.0
+offset_top = -29.0
+offset_right = 1153.0
+offset_bottom = 619.0
 texture = ExtResource("6_0qmye")
 expand_mode = 1
+metadata/_edit_lock_ = true
+
+[node name="WallLeft" type="StaticBody2D" parent="." unique_id=451151829]
+
+[node name="CollisionShape2DLeft" type="CollisionShape2D" parent="WallLeft" unique_id=1735098324]
+rotation = 4.712389
+shape = SubResource("WorldBoundaryShape2D_enmba")
+
+[node name="WallTop" type="StaticBody2D" parent="." unique_id=114088160]
+position = Vector2(2, -29)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallTop" unique_id=2016174242]
+shape = SubResource("WorldBoundaryShape2D_enmba")
+
+[node name="WallBottom" type="StaticBody2D" parent="." unique_id=1020557582]
+position = Vector2(1, 620)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallBottom" unique_id=2014772884]
+rotation = 3.1415927
+shape = SubResource("WorldBoundaryShape2D_enmba")
+
+[node name="WallRight" type="StaticBody2D" parent="." unique_id=1415094725]
+position = Vector2(1152, 591)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight" unique_id=1391842585]
+position = Vector2(1, -1)
+rotation = 1.5707964
+shape = SubResource("WorldBoundaryShape2D_enmba")
 
 [connection signal="body_entered" from="ComputerArea" to="ComputerArea" method="_on_body_entered"]
 [connection signal="body_exited" from="ComputerArea" to="ComputerArea" method="_on_body_exited"]
-[connection signal="body_entered" from="ComputerArea2" to="ComputerArea2" method="_on_body_entered"]
-[connection signal="body_exited" from="ComputerArea2" to="ComputerArea2" method="_on_body_exited"]
